@@ -39,7 +39,7 @@ class ExerciseRepsSet(Base):
     exercise = relationship("Exercise")
     rep_count = Column(Integer)
     set_count = Column(Integer)
-    workout_plans = relationship("ExerciseRepsSetWorkoutPlan", back_populates='exercise_reps_set')
+    exercise_reps_set_workout_plan = relationship("ExerciseRepsSetWorkoutPlan", back_populates='exercise_reps_set')
 
 
 class WorkoutPlan(Base):
@@ -62,16 +62,28 @@ class Workout(Base):
     name = Column(String(254))
     workout_schedules = relationship("WorkoutSchedule")
 
+class WorkoutScheduleInstance(Base):
+    __tablename__ = 'workout_schedule_instance'
+    id = Column(Integer, primary_key=True)
+    workout_schedule_id = Column(Integer, ForeignKey('workout_schedule.id'))
+    start_day = Column(Integer) # 0 Sunday 1 Monday...
+    workout_schedule = relationship("WorkoutSchedule")
 
 class WorkoutSchedule(Base):
     __tablename__ = 'workout_schedule'
 
     id = Column(Integer, primary_key=True)
     workout_id = Column(Integer, ForeignKey('workout.id'))  # fk to workout
-    order = Column(Integer)
-    rest_between_plans = Column(Integer)
+    workout_schedule_type_id = Column(Integer, ForeignKey('workout_schedule_type.id'))
+    workout_schedule_type = relationship("WorkoutScheduleType")
     workout_plans = relationship("WorkoutPlan", back_populates='workout_schedule')
 
+class WorkoutScheduleType(Base): #every day, every other, 3x week, 2x week, 1x week
+    __tablename__ = 'workout_schedule_type'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(254))
+    workout_schedules = relationship('WorkoutSchedule', back_populates='workout_schedule_type')
 
 class ExerciseSetInstance(Base):
     __tablename__ = 'exercide_set_instance'
@@ -80,7 +92,6 @@ class ExerciseSetInstance(Base):
     exercise_id = Column(Integer)  # fk to exercise
     reps_achieved = Column(Integer)
     set = Column(Integer)
-
 
 class WorkoutInstance(Base):
     __tablename__ = 'workout_instance'

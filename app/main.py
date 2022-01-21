@@ -19,9 +19,6 @@ class MainApp(MDApp):
 
     def getWorkoutName(self):
         session = getNewSession()
-        newWorkout = Workout(name='5x5 Baby!')
-        session.add(newWorkout)
-        session.commit()
         w = session.query(Workout).order_by(desc(Workout.id)).first()
         return w.name + '-' + str(w.id)
 
